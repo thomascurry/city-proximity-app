@@ -11,7 +11,8 @@ export const usersInRadius = async (
   next: NextFunction
 ) => {
   try {
-    const city: string = req.openapi?.pathParams?.city!;
+    const city: string = req.params?.city!;
+    const radius: number = Number(req.query?.radius) || 50;
     const location: Location | undefined =
       testAppService.getLocationOfCity(city);
 
@@ -27,7 +28,7 @@ export const usersInRadius = async (
 
     const usersInRadius: User[] = await testAppService.usersInRadius(
       location,
-      50
+      radius
     );
 
     const result = _.union(usersInCity, usersInRadius);

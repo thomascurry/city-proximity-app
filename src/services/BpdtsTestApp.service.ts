@@ -28,7 +28,6 @@ export const usersInCity = async (
 ): Promise<AxiosResponse<User[]>> => {
   const [firstLetter, ...rest] = city.toLowerCase();
   const capitalizedCity = firstLetter.toUpperCase() + rest.join("");
-  console.log(capitalizedCity);
   return connector.getUsersInCity(capitalizedCity);
 };
 

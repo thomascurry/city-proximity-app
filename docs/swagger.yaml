@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: City Proximity App
-  description: "Description"
+  description: "An app that determines users within a city or within a proximity to a city"
   version: 1.0.0
 
 paths:
@@ -10,6 +10,11 @@ paths:
       summary: Return all the users within a radius of a city, defaults to 50 miles
       operationId: usersInRadius
       x-eov-operation-handler: "BpdtsTestApp.controller"
+      parameters:
+        - in: query
+          name: radius
+          schema:
+            type: integer
       responses:
         200:
           description: Successful response
@@ -28,5 +33,17 @@ components:
   schemas:
     CityUsersResponse:
       type: object
+      properties:
+        users:
+          type: array
+          items:
+            type: object
     Error:
       type: object
+      properties:
+        status:
+          type: integer
+          example: 500
+        message:
+          type: string
+          example: an unknown error occurred

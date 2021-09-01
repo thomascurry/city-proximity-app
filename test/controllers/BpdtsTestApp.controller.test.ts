@@ -28,12 +28,10 @@ afterEach(() => {
 });
 
 describe("usersInRadius", () => {
-  it("should return all the users within the supplied radius", async () => {
+  it("should return all the users within the default radius", async () => {
     const fakeRequest = {
-      openapi: {
-        pathParams: {
-          city: "london",
-        },
+      params: {
+        city: "london",
       },
     } as unknown as OpenApiRequest;
 
@@ -57,18 +55,59 @@ describe("usersInRadius", () => {
 
     await usersInRadius(fakeRequest, fakeResponse, fakeNext);
 
+    expect(mockService.usersInRadius).toHaveBeenCalledWith(
+      { latitude: 1, longitude: 1 },
+      50
+    );
     expect(fakeResponse.status).toHaveBeenCalledWith(200);
     expect(fakeResponse.json).toHaveBeenCalledWith({
       users: fakeData,
     });
   });
 
+  it("should return all the users within the supplied radius", async () => {
+    const fakeRequest = {
+      params: {
+        city: "london",
+      },
+      query: {
+        radius: 10,
+      },
+    } as unknown as OpenApiRequest;
+
+    const fakeResponse = {} as Response;
+
+    fakeResponse.status = jest.fn().mockReturnValueOnce(fakeResponse);
+    fakeResponse.json = jest.fn().mockReturnValueOnce(fakeResponse);
+
+    const fakeNext = {} as unknown as NextFunction;
+
+    mockService.getLocationOfCity.mockReturnValueOnce({
+      latitude: 1.0,
+      longitude: 1.0,
+    });
+
+    mockService.usersInCity.mockResolvedValueOnce({
+      data: fakeData,
+    } as unknown as AxiosResponse);
+
+    mockService.usersInRadius.mockResolvedValueOnce(fakeData);
+
+    await usersInRadius(fakeRequest, fakeResponse, fakeNext);
+
+    expect(mockService.usersInRadius).toHaveBeenCalledWith(
+      { latitude: 1, longitude: 1 },
+      10
+    );
+    expect(fakeResponse.status).toHaveBeenCalledWith(200);
+    expect(fakeResponse.json).toHaveBeenCalledWith({
+      users: fakeData,
+    });
+  });
   it("should pass a not found error when the location doesnt exist in the dataset", async () => {
     const fakeRequest = {
-      openapi: {
-        pathParams: {
-          city: "unknown",
-        },
+      params: {
+        city: "unknown",
       },
     } as unknown as OpenApiRequest;
 
@@ -96,10 +135,8 @@ describe("usersInRadius", () => {
 
   it("should pass an error thrown by the service", async () => {
     const fakeRequest = {
-      openapi: {
-        pathParams: {
-          city: "unknown",
-        },
+      params: {
+        city: "unknown",
       },
     } as unknown as OpenApiRequest;
 
