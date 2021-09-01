@@ -1,0 +1,32 @@
+openapi: 3.0.0
+info:
+  title: City Proximity App
+  description: "Description"
+  version: 1.0.0
+
+paths:
+  /cities/{city}/users:
+    get:
+      summary: Return all the users within a radius of a city, defaults to 50 miles
+      operationId: usersInRadius
+      x-eov-operation-handler: "BpdtsTestApp.controller"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CityUsersResponse"
+        404:
+          description: "The city provided did not exist in the dataset"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    CityUsersResponse:
+      type: object
+    Error:
+      type: object

@@ -1,9 +1,10 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
+import openapiValidator from "./bootstrap/openapi-validator";
+import errorHandler from "./controllers/ErrorHandler.controller";
 
 const app: Application = express();
 
-app.get("/", (_req: Request, res: Response) => {
-  return res.status(200).send("Hello");
-});
+openapiValidator(app);
+app.use(errorHandler);
 
 export default app;
